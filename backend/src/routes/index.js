@@ -1,21 +1,28 @@
-// const router = require("express").Router();
-// const routes=[{
-//     path:'/auth',
-//     route:require("./Auth.route")
-// }]
-// routes.forEach((cur)=>{
-//     router.use(cur.path,cur.route);
-// })
-// module.exports=router
+import { Router } from "express"
+import authRoutes from "./Auth.route.js"
+import consumerRoutes from "./Consumer.route.js"
+import orderRoutes from "./Order.route.js"
 
-const router = require("express").Router();
-const routes= [
-    {
-        path:'/auth',
-        route:require("./Auth.route")
-    }
+const router = Router()
+
+const routes = [
+  {
+    path: "/auth",
+    route: authRoutes,
+  },
+  {
+    path: "/consumer",
+    route: consumerRoutes,
+  },
+  {
+    path: "/orders",
+    route: orderRoutes,
+  },
 ]
-routes.forEach((cur)=>{
-    router.use(cur.path,cur.route);
+
+routes.forEach((route) => {
+  router.use(route.path, route.route)
 })
-module.exports = router
+
+export default router
+

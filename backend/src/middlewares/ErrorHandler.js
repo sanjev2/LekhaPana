@@ -1,20 +1,24 @@
-const ApiError = require("../utils/ApiError")
+import { Sequelize } from "sequelize";
+import ApiError from "../utils/ApiError.js";
 
-const ErrorHandling = (err,req,res,next)=>{
-    const obj ={}
-    if(err instanceof ApiError){
-                obj['statusCode'] = err.statusCode
-                obj['message'] = err.message
-                obj['stack'] = err.stack
+const ErrorHandling = (err, req, res, next) => {
+  let statusCode = 500;
+  let message = "Internal Server Error";
 
+  if (err instanceof ApiError) {
+    statusCode = err.statusCode;
+    message = err.message;
+  } else if (err instanceof Sequelize.ValidationError) {
+    statusCode = 400;
+    message = err.errors[0]?.message || "Validation error";
+  } else if (err instanceof Sequelize.DatabaseError) {
+    statusCode = 500;
+    message = "Database error occurred";
+  } else {
+    message = err.message;
+  }
 
-    }else{
-        obj['statusCode'] = 400
-        obj['message'] = err.message
-        obj['stack'] = err.stack
-    }
+  res.status(statusCode).json({ statusCode, message });
+};
 
-    res.status(obj.statusCode).json(obj)
-}
-
-module.exports =ErrorHandling
+export default ErrorHandling;
