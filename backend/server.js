@@ -1,16 +1,19 @@
-require("dotenv").config({
+import dotenv from "dotenv";
+import app from "./src/app.js";
+import { db } from "./src/config/db.config.js";
 
-})
-const { PUBLIC_DATA } = require("./constant");
-const app = require("./src/app"); 
-const { ConnectDB } = require("./src/config/db.config");
-ConnectDB()
+dotenv.config();
 
+const PORT = process.env.PORT || 4000;
 
+const initializeServer = async () => {
+  try {
+    await db();
+    app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+  } catch (error) {
+    console.error("❌ Server initialization failed:", error);
+    process.exit(1);
+  }
+};
 
-app.listen(PUBLIC_DATA.port,()=>{
-    console.log(`the app is listen at http://localhost:${PUBLIC_DATA.port}`);
-})
-
-
-// --views
+initializeServer();

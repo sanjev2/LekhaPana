@@ -1,7 +1,8 @@
-const CatchAsync=(fn)=>(req,res,next)=>{
-    return Promise.resolve(fn(req,res,next)).catch((e)=>{
-        console.log("promise can e bracked");
-        next(e)
-    })
+const CatchAsync = (fn) => {
+  return (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next)
+  }
 }
-module.exports=CatchAsync
+
+export default CatchAsync
+
