@@ -19,34 +19,28 @@ class OrderService {
     static async getAllorders(userId, page = 1, query) {
         const limit = 10;
         const offset = (Number(page) - 1) * limit;
-
+        
+        // If a query is provided, build a filter on the consumer's name
+        const consumerFilter = query ? { name: { [Op.iLike]: `%${query}%` } } : {};
+    
         const queryOptions = {
-            where: {
-                userId,
-                ...(query && {
-                    items: {
-                        [Op.contains]: [{ name: { [Op.iLike]: `%${query}%` } }]
-                    }
-                })
-            },
-            include: [{
-                model: models.Consumer, // Reference to models.Consumer
-                attributes: ['name', 'email']
-            }],
-            order: [['createdAt', 'DESC']],
-            limit,
-            offset
+          where: { userId },
+          include: [{
+            model: models.Consumer,
+            attributes: ['name', 'email'],
+            // Only apply the filter if a query is provided
+            where: Object.keys(consumerFilter).length ? consumerFilter : undefined
+          }],
+          order: [['createdAt', 'DESC']],
+          limit,
+          offset
         };
-
+    
         const { count, rows: data } = await models.Order.findAndCountAll(queryOptions);
-
         const hasMore = offset + limit < count;
-
-        return {
-            data,
-            hasMore
-        };
-    }
+    
+        return { data, hasMore };
+      }
 
     static async deleteOrder(userId, id) {
         const existOrder = await models.Order.findOne({
@@ -81,7 +75,7 @@ class OrderService {
                 },
                 {
                     model: models.User, // Reference to models.User
-                    attributes: ['name']
+                    attributes: ['name','email']
                 }
             ]
         });

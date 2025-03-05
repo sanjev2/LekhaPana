@@ -42,10 +42,9 @@ const Register: React.FC = () => {
 
       console.log(data, error)
 
-      localStorage.setItem("token", data.token)
 
       resetForm()
-      navigate("/")
+      navigate("/login")
     } catch (error: any) {
       toast.error(error.message)
     } finally {
